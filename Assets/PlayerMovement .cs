@@ -8,43 +8,50 @@ public class PlayerMovement : MonoBehaviour
     //intentar cambiar el movimiento entre carriles para que no dependa de una resolución fija
 
     [SerializeField] private GameObject Adachi;
-    [SerializeField] private GameObject Carril_1;
-    [SerializeField] private GameObject Carril_2;
-    [SerializeField] private GameObject Carril_3;
+ 
     public enum Carriles
     {
        izquierdo = 1,
        centro,
        derecha,
     }
+
     [SerializeField] private int vidas = 3;
+
+    [SerializeField] private float separacionCarriles = 2.5f; // distancia en X entre carriles
+    [SerializeField] private float velocidadCambioCarril = 15f;
+
     public Carriles PosicionActual = Carriles.centro;
     public int Carril;
+
     [SerializeField] private bool Shield_Active = false; //serialize temporal
     private bool Shield_Can_Active = true;
     [SerializeField] private float Shield_Cooldown = 6f;
     [SerializeField] private float Shield_Duration = 2f;
 
+    private float xCentro; // posicion X inicial del jugador, se usa como referencia
+    private Vector3 posicionObjetivo;
+
     void Start()
     {
-        
+        xCentro = Adachi.transform.position.x;
+        posicionObjetivo = Adachi.transform.position;
     }
     void Update()
     {
-        CarrilActual();
         Inputs();
         Posicionamiento_Jugador();
-        TakeDamage();
+        MoverHaciaCarril();
     }
 
     private void Inputs()
     {
         //para cambiar de carril A - D
-        if (Input.GetKeyDown(KeyCode.A) && PosicionActual != Carriles.izquierdo)
+        if (Input.GetKeyDown(KeyCode.A) && Carril > 1)
         {
             Carril--;
         }
-        if (Input.GetKeyDown(KeyCode.D) && PosicionActual != Carriles.derecha)
+        if (Input.GetKeyDown(KeyCode.D) && Carril < 3)
         {
             Carril++;
         }
@@ -55,38 +62,33 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(Shield());
         }
     }
-    private void CarrilActual()
-    {
-        if (PosicionActual == Carriles.izquierdo)
-        {
-            Carril = (int)PosicionActual;
-        }
-        else if (PosicionActual == Carriles.centro)
-        {
-            Carril = (int)PosicionActual;
-        }
-        else if (PosicionActual == Carriles.derecha)
-        {
-            Carril = (int)PosicionActual;
-        }
-    }
     private void Posicionamiento_Jugador()
     {
-        if (Carril == 1)
+        float offsetX = 0f;
+
+        switch (Carril)
         {
-            PosicionActual = Carriles.izquierdo;
-            Adachi.transform.position = Carril_1.transform.position;
+            case 1:
+                PosicionActual = Carriles.izquierdo;
+                offsetX = -separacionCarriles;
+                break;
+            case 2:
+                PosicionActual = Carriles.centro;
+                offsetX = 0f;
+                break;
+            case 3:
+                PosicionActual = Carriles.derecha;
+                offsetX = separacionCarriles;
+                break;
         }
-        else if (Carril == 2)
-        {
-            PosicionActual = Carriles.centro;
-            Adachi.transform.position = Carril_2.transform.position;
-        }
-        else if (Carril == 3)
-        {
-            PosicionActual = Carriles.derecha;
-            Adachi.transform.position = Carril_3.transform.position;
-        }
+
+        // Solo cambia X; Y y Z los deja como estén (útil si el jugador salta o la pista se mueve en Z)
+        posicionObjetivo = new Vector3(xCentro + offsetX, Adachi.transform.position.y, Adachi.transform.position.z);
+    }
+
+    private void MoverHaciaCarril()
+    {
+        Adachi.transform.position = Vector3.MoveTowards(Adachi.transform.position, posicionObjetivo, velocidadCambioCarril * Time.deltaTime);
     }
     private void TakeDamage()
     {

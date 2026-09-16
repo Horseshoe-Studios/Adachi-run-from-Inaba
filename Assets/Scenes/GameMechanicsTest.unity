@@ -518,6 +518,7 @@ GameObject:
   - component: {fileID: 2144926741}
   - component: {fileID: 2144926740}
   - component: {fileID: 2144926743}
+  - component: {fileID: 2144926744}
   m_Layer: 0
   m_Name: adachi
   m_TagString: Untagged
@@ -638,6 +639,27 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2144926744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2144926739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56b282becf4c62d499031fa203268f70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Adachi: {fileID: 2144926739}
+  vidas: 3
+  separacionCarriles: 2.5
+  velocidadCambioCarril: 15
+  PosicionActual: 2
+  Carril: 0
+  Shield_Active: 0
+  Shield_Cooldown: 6
+  Shield_Duration: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
