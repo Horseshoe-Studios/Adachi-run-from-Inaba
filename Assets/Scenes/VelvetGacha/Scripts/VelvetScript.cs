@@ -5,12 +5,17 @@ using TMPro;
 
 public class VelvetScript : MonoBehaviour
 {
+    private const string PREF_TOKENS = "TokensGuardados";
+
+    [Header("Conexión con MenuManager")]
+    [SerializeField] private MenuManager menuManager;
+
     [Header("Menú / Ventana")]
     [SerializeField] private GameObject menuGacha;
 
     [Header("Elementos de UI a activar")]
     [SerializeField] private GameObject botonGacha;
-    [SerializeField] private GameObject tokensImage; // Imagen del token
+    [SerializeField] private GameObject tokensImage;
 
     [Header("Animators")]
     [SerializeField] private Animator animatorIgor;
@@ -28,37 +33,42 @@ public class VelvetScript : MonoBehaviour
     [SerializeField] private float duracionGacha = 2.5f;
 
     [Header("Tokens")]
-    [SerializeField] private int tokens = 0;
+    [SerializeField] private int tokensPorDefecto = 0; // Tokens iniciales si nunca ha jugado
+    private int tokens = 0;
     [SerializeField] private TextMeshProUGUI textoTokens;
 
     private Coroutine secuenciaCoroutine;
+    private bool secuenciaIniciada = false;
 
     void Start()
     {
+        // Cargar tokens guardados; si es la primera vez, usa tokensPorDefecto
+        tokens = PlayerPrefs.GetInt(PREF_TOKENS, tokensPorDefecto);
         ActualizarTextoTokens();
 
-        // Ocultar botón, imagen y texto al iniciar
-        if (botonGacha != null)
-        {
-            botonGacha.SetActive(false);
-        }
-
-        if (tokensImage != null)
-        {
-            tokensImage.SetActive(false);
-        }
-
-        if (textoTokens != null)
-        {
-            textoTokens.gameObject.SetActive(false);
-        }
+        if (botonGacha != null) botonGacha.SetActive(false);
+        if (tokensImage != null) tokensImage.SetActive(false);
+        if (textoTokens != null) textoTokens.gameObject.SetActive(false);
     }
 
     void Update()
     {
-        if (menuGacha != null && menuGacha.activeSelf && secuenciaCoroutine == null)
+        if (menuGacha != null)
         {
-            IniciarSecuencia();
+            if (menuGacha.activeSelf && !secuenciaIniciada)
+            {
+                // Refrescar tokens por si vienes de la escena de juego habiendo recogido monedas
+                tokens = PlayerPrefs.GetInt(PREF_TOKENS, tokens);
+                ActualizarTextoTokens();
+
+                secuenciaIniciada = true;
+                IniciarSecuencia();
+            }
+            else if (!menuGacha.activeSelf && secuenciaIniciada)
+            {
+                secuenciaIniciada = false;
+                ResetearAnimaciones();
+            }
         }
     }
 
@@ -73,31 +83,15 @@ public class VelvetScript : MonoBehaviour
 
     private IEnumerator SecuenciaGachaRoutine()
     {
-        // 1. Animación de Igor
-        if (animatorIgor != null)
-        {
-            animatorIgor.SetBool(boolIgor, true);
-        }
-
+        if (animatorIgor != null) animatorIgor.SetBool(boolIgor, true);
         yield return new WaitForSeconds(duracionIgor);
 
-        // 2. Animación de texto
-        if (animatorTexto != null)
-        {
-            animatorTexto.SetBool(boolTexto, true);
-        }
-
+        if (animatorTexto != null) animatorTexto.SetBool(boolTexto, true);
         yield return new WaitForSeconds(duracionTexto);
 
-        // 3. Animación del gacha
-        if (animatorGacha != null)
-        {
-            animatorGacha.SetBool(boolGacha, true);
-        }
-
+        if (animatorGacha != null) animatorGacha.SetBool(boolGacha, true);
         yield return new WaitForSeconds(duracionGacha);
 
-        // 4. Espera 1 segundo y activa botón, texto e imagen al mismo tiempo
         yield return StartCoroutine(ActivarInterfazRoutine());
 
         secuenciaCoroutine = null;
@@ -107,26 +101,18 @@ public class VelvetScript : MonoBehaviour
     {
         yield return new WaitForSeconds(1.0f);
 
-        if (botonGacha != null)
-        {
-            botonGacha.SetActive(true);
-        }
-
-        if (tokensImage != null)
-        {
-            tokensImage.SetActive(true);
-        }
-
-        if (textoTokens != null)
-        {
-            textoTokens.gameObject.SetActive(true);
-        }
+        if (botonGacha != null) botonGacha.SetActive(true);
+        if (tokensImage != null) tokensImage.SetActive(true);
+        if (textoTokens != null) textoTokens.gameObject.SetActive(true);
     }
 
     // --- LÓGICA DE TIRO ---
 
     public void TirarGacha()
     {
+        // Asegurar que leemos el valor más actualizado
+        tokens = PlayerPrefs.GetInt(PREF_TOKENS, tokens);
+
         if (tokens > 0)
         {
             TirarCorrecto();
@@ -140,8 +126,17 @@ public class VelvetScript : MonoBehaviour
     private void TirarCorrecto()
     {
         tokens--;
+        // Guardar el nuevo valor en disco
+        PlayerPrefs.SetInt(PREF_TOKENS, tokens);
+        PlayerPrefs.Save();
+
         ActualizarTextoTokens();
         Debug.Log("Tiro realizado con éxito. Tokens restantes: " + tokens);
+
+        if (menuManager != null)
+        {
+            menuManager.tirar_gacha();
+        }
     }
 
     private void NoTokens()
@@ -157,11 +152,6 @@ public class VelvetScript : MonoBehaviour
         }
     }
 
-    private void OnValidate()
-    {
-        ActualizarTextoTokens();
-    }
-
     public void ResetearAnimaciones()
     {
         if (secuenciaCoroutine != null)
@@ -174,19 +164,28 @@ public class VelvetScript : MonoBehaviour
         if (animatorTexto != null) animatorTexto.SetBool(boolTexto, false);
         if (animatorGacha != null) animatorGacha.SetBool(boolGacha, false);
 
-        if (botonGacha != null)
-        {
-            botonGacha.SetActive(false);
-        }
+        if (botonGacha != null) botonGacha.SetActive(false);
+        if (tokensImage != null) tokensImage.SetActive(false);
+        if (textoTokens != null) textoTokens.gameObject.SetActive(false);
+    }
 
-        if (tokensImage != null)
-        {
-            tokensImage.SetActive(false);
-        }
+    // ==========================================
+    // MÉTODOS ESTÁTICOS ACCESIBLES DESDE CUALQUIER ESCENA
+    // ==========================================
 
-        if (textoTokens != null)
-        {
-            textoTokens.gameObject.SetActive(false);
-        }
+    // Tu compañero puede llamar a esto desde la escena de jugar al recoger monedas
+    public static void AnadirTokens(int cantidad)
+    {
+        int guardados = PlayerPrefs.GetInt(PREF_TOKENS, 0);
+        guardados += cantidad;
+        PlayerPrefs.SetInt(PREF_TOKENS, guardados);
+        PlayerPrefs.Save();
+        Debug.Log("Monedas sumadas: " + cantidad + ". Total actual: " + guardados);
+    }
+
+    // Por si necesitas consultar cuántas monedas tiene el jugador desde la escena de juego
+    public static int ObtenerTokens()
+    {
+        return PlayerPrefs.GetInt(PREF_TOKENS, 0);
     }
 }
