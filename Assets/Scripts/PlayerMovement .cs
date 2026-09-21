@@ -13,6 +13,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private MeshRenderer Shield_Mesh_Renderer;
     [SerializeField] private Rigidbody rb;
 
+    //Controles movil
+    [SerializeField] private float minSwipeDistance = 50f;
+    private Vector2 dragStartPosition;
+
     private int playerLayer;
     private int obstaculosLayer;
 
@@ -35,7 +39,7 @@ public class PlayerMovement : MonoBehaviour
     public Carriles PosicionActual = Carriles.centro;
     private int Carril = 2;
 
-    [SerializeField] private bool Shield_Active = false; //serialize temporal
+    private bool Shield_Active = false; 
     private bool Shield_Can_Active = true;
     [SerializeField] private float Shield_Cooldown = 6f;
     [SerializeField] private float Shield_Duration = 2f;
@@ -95,6 +99,43 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Inputs()
     {
+        //Movil
+
+        if (Input.GetMouseButtonDown(0)) //pulsa
+        {
+            dragStartPosition = Input.mousePosition;
+        }
+
+        if (Input.GetMouseButtonUp(0))//Suelta el pulsado
+        {
+            Vector2 dragEndPosition = Input.mousePosition;
+
+            Vector2 dragDirection = dragEndPosition - dragStartPosition;
+
+            if (dragDirection.magnitude >= minSwipeDistance)
+            {
+                if (Mathf.Abs(dragDirection.x) > Mathf.Abs(dragDirection.y))
+                {
+                    if (dragDirection.x > 0 && Carril < 3) //derecha
+                    {
+                        Carril++;
+                    }
+                    else if (dragDirection.x < 0 && Carril > 1) //izquierda
+                    {
+                        Carril--;
+                    }
+                }
+                else
+                {
+                    if (dragDirection.y > 0) //para arriba
+                    {
+                        Salto();
+                    }
+                }
+            }
+        }
+
+        // PC
         //para cambiar de carril A - D
         if (Input.GetKeyDown(KeyCode.A) && Carril > 1)
         {
@@ -106,14 +147,20 @@ public class PlayerMovement : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.R) && !Shield_Active && Shield_Can_Active)
         {
-            Shield_Active = true;
-            Shield_Can_Active = false;
-            StartCoroutine(Shield());
+           ActivateShield();
         }
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Salto();
         }
+    }
+    public void ActivateShield()
+    {
+        if (Shield_Active || !Shield_Can_Active) return;
+        Debug.Log("escudo activado");
+        Shield_Active = true;
+        Shield_Can_Active = false;
+        StartCoroutine(Shield());
     }
     private void Posicionamiento_Jugador()
     {
@@ -138,7 +185,6 @@ public class PlayerMovement : MonoBehaviour
         }
 
         xObjetivo = xCentro + offsetX;
-        Debug.Log(xObjetivo);
     }
 
     private void Salto()
