@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 6049235721136561080}
   - component: {fileID: 619727314408387180}
   - component: {fileID: 5389907312484147678}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (23)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -210,7 +210,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7975626129864337144}
   - component: {fileID: 3887591599553296312}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: hitbos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -391,7 +391,7 @@ GameObject:
   - component: {fileID: 6158357547789580102}
   - component: {fileID: 2745007756986434723}
   - component: {fileID: 488283418185367927}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (21)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -558,7 +558,7 @@ GameObject:
   m_Component:
   - component: {fileID: 948288187191614302}
   - component: {fileID: 6068103648726369314}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Hitbos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -612,7 +612,7 @@ GameObject:
   - component: {fileID: 9041405096175128128}
   - component: {fileID: 1511248461047394310}
   - component: {fileID: 6479944059317533049}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -695,7 +695,7 @@ GameObject:
   - component: {fileID: 8591192863285228864}
   - component: {fileID: 2637894151254192866}
   - component: {fileID: 533751015523463328}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (19)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -862,7 +862,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7123332211494235954}
   - component: {fileID: 7454267750884835035}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Hitbos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -916,7 +916,7 @@ GameObject:
   - component: {fileID: 642135896806954913}
   - component: {fileID: 4704870891475604291}
   - component: {fileID: 4199676734390386378}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (13)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1179,7 +1179,7 @@ GameObject:
   - component: {fileID: 1321845715708601393}
   - component: {fileID: 7699304695178276121}
   - component: {fileID: 1013081517133124313}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (15)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1325,7 +1325,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2395358012480765176}
   - component: {fileID: 4697444473633038530}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Hitbos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1379,7 +1379,7 @@ GameObject:
   - component: {fileID: 3487732998610580190}
   - component: {fileID: 4378288636028882355}
   - component: {fileID: 4401463604052408109}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1462,7 +1462,7 @@ GameObject:
   - component: {fileID: 5387130907889617645}
   - component: {fileID: 8835546298957525445}
   - component: {fileID: 902441979616273389}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1544,7 +1544,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4398606076309105926}
   - component: {fileID: 2715965995164824048}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Hitbos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1587,6 +1587,112 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &3134666742644862403
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5204766155915353289}
+  - component: {fileID: 717906331561925897}
+  - component: {fileID: 8823638485164691534}
+  m_Layer: 9
+  m_Name: velvetseal (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5204766155915353289
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3134666742644862403}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.37, y: 0.745, z: 0.12}
+  m_LocalScale: {x: 0.05402305, y: 0.09238305, z: 0.05402305}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7465355607221556719}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &717906331561925897
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3134666742644862403}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 21300000, guid: aad15a15aa6366948b86a57eb306f320, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 7.23, y: 8}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!65 &8823638485164691534
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3134666742644862403}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 7.2299986, y: 8, z: 0.19999997}
+  m_Center: {x: 0.00000047683716, y: 0, z: 0}
 --- !u!1 &3236482583377295047
 GameObject:
   m_ObjectHideFlags: 0
@@ -1597,7 +1703,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8101011396109187510}
   - component: {fileID: 7219355319849256998}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: hitbos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1651,7 +1757,7 @@ GameObject:
   - component: {fileID: 8855943194774763794}
   - component: {fileID: 4255994094836648248}
   - component: {fileID: 3694106455249169324}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (17)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1913,7 +2019,7 @@ GameObject:
   m_Component:
   - component: {fileID: 668258913923940436}
   - component: {fileID: 5730884958490028581}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Hitbos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1967,7 +2073,7 @@ GameObject:
   - component: {fileID: 5013116849156445477}
   - component: {fileID: 8207992946473107795}
   - component: {fileID: 103102649602957733}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (12)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2135,7 +2241,7 @@ GameObject:
   - component: {fileID: 2867885902820462690}
   - component: {fileID: 2343551894593266431}
   - component: {fileID: 5501587631415700708}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (26)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2303,7 +2409,7 @@ GameObject:
   - component: {fileID: 6813544198711165476}
   - component: {fileID: 3692341793322479701}
   - component: {fileID: 9144274117223385670}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (28)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2503,7 +2609,7 @@ GameObject:
   - component: {fileID: 3677068994487939732}
   - component: {fileID: 1729301390567600632}
   - component: {fileID: 6467389263944522555}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2586,7 +2692,7 @@ GameObject:
   - component: {fileID: 8616800514200201691}
   - component: {fileID: 778996035879712909}
   - component: {fileID: 3419884318782356015}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (22)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2669,7 +2775,7 @@ GameObject:
   - component: {fileID: 6043250277360177346}
   - component: {fileID: 7625269925649721942}
   - component: {fileID: 7976795504381692843}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (25)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2752,7 +2858,7 @@ GameObject:
   - component: {fileID: 4843768199486959948}
   - component: {fileID: 4417413828660530676}
   - component: {fileID: 298931427225100245}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2835,7 +2941,7 @@ GameObject:
   - component: {fileID: 659253224022854621}
   - component: {fileID: 4901287462700311785}
   - component: {fileID: 1501790566048135412}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (24)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2918,7 +3024,7 @@ GameObject:
   - component: {fileID: 8373205512700265380}
   - component: {fileID: 8043341009902405016}
   - component: {fileID: 2169488983096752248}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (18)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3000,7 +3106,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2194322707554033192}
   - component: {fileID: 3405462685182114511}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: hitbos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3054,7 +3160,7 @@ GameObject:
   - component: {fileID: 7411918997412618955}
   - component: {fileID: 6886305541033627123}
   - component: {fileID: 120669629945804647}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (20)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3137,7 +3243,7 @@ GameObject:
   - component: {fileID: 3653281522616457870}
   - component: {fileID: 7645910361223082012}
   - component: {fileID: 1384440830421984347}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (30)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3220,7 +3326,7 @@ GameObject:
   - component: {fileID: 8873551695961920470}
   - component: {fileID: 432879842018382854}
   - component: {fileID: 8042097199111767117}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3387,7 +3493,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7516798325058968584}
   - component: {fileID: 6460984011563694571}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Hitbos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3441,7 +3547,7 @@ GameObject:
   - component: {fileID: 5725454682732941169}
   - component: {fileID: 4694893786197252994}
   - component: {fileID: 5246948966445361509}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3524,7 +3630,7 @@ GameObject:
   - component: {fileID: 2037124839952488299}
   - component: {fileID: 8328750533179761315}
   - component: {fileID: 5756747209154597070}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (14)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3692,7 +3798,7 @@ GameObject:
   - component: {fileID: 2248697495349658614}
   - component: {fileID: 5889140597122042757}
   - component: {fileID: 8328606908753093996}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3775,7 +3881,7 @@ GameObject:
   - component: {fileID: 6951650605248054177}
   - component: {fileID: 5795166581471163191}
   - component: {fileID: 1681566229025782611}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (31)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3942,7 +4048,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4621739620552463240}
   - component: {fileID: 4473540352371456703}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Hitbos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4060,7 +4166,7 @@ GameObject:
   - component: {fileID: 5208839360427302667}
   - component: {fileID: 5793233172990000985}
   - component: {fileID: 378402788317143856}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4175,7 +4281,7 @@ GameObject:
   - component: {fileID: 6461517781718070141}
   - component: {fileID: 4700165605713278100}
   - component: {fileID: 4954199873026621047}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (29)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4258,7 +4364,7 @@ GameObject:
   - component: {fileID: 5706070443050262359}
   - component: {fileID: 2407880889234065623}
   - component: {fileID: 542217173812283237}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (27)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4437,7 +4543,7 @@ GameObject:
   - component: {fileID: 6805433482067014291}
   - component: {fileID: 1115538128909467708}
   - component: {fileID: 4873360601080985256}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (16)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4520,7 +4626,7 @@ GameObject:
   - component: {fileID: 431117384375049933}
   - component: {fileID: 7569154803456153528}
   - component: {fileID: 1569100461110180109}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (10)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4602,7 +4708,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6223745116094070498}
   - component: {fileID: 8410991825395753554}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: hitbos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4656,7 +4762,7 @@ GameObject:
   - component: {fileID: 1464461868729134051}
   - component: {fileID: 1345232689454967305}
   - component: {fileID: 8171373091040926260}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (9)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4857,7 +4963,7 @@ GameObject:
   - component: {fileID: 2141537721135104085}
   - component: {fileID: 3485378316669579477}
   - component: {fileID: 521871135445249682}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Camino1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4880,6 +4986,8 @@ Transform:
   - {fileID: 3949817520478199981}
   - {fileID: 8947731254047170401}
   - {fileID: 6205545153065377070}
+  - {fileID: 5204766155915353289}
+  - {fileID: 1320918802124841258}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2141537721135104085
@@ -4963,7 +5071,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9033499714446210149}
   - component: {fileID: 5789927145402301355}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Hitbos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5006,6 +5114,112 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &8683387943198605003
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1320918802124841258}
+  - component: {fileID: 2127397011216123986}
+  - component: {fileID: 6004529811544676327}
+  m_Layer: 9
+  m_Name: velvetseal (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1320918802124841258
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8683387943198605003}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.381, y: 0.745, z: -0.3171}
+  m_LocalScale: {x: 0.05402305, y: 0.09238305, z: 0.05402305}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7465355607221556719}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &2127397011216123986
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8683387943198605003}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 21300000, guid: aad15a15aa6366948b86a57eb306f320, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 7.23, y: 8}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!65 &6004529811544676327
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8683387943198605003}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 7.2299986, y: 8, z: 0.19999997}
+  m_Center: {x: -0.00000047683716, y: 0, z: 0}
 --- !u!1 &8734404317673632088
 GameObject:
   m_ObjectHideFlags: 0
@@ -5016,7 +5230,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1217108542242317523}
   - component: {fileID: 484320306325835454}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Hitbos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5105,7 +5319,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1799094537609788226}
   - component: {fileID: 4968256875875586688}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Hitbos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5244,7 +5458,7 @@ GameObject:
   - component: {fileID: 116387182552510925}
   - component: {fileID: 6405755069955633271}
   - component: {fileID: 7802429625811940667}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RayasBlancas (11)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
