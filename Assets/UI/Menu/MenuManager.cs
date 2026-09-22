@@ -3,18 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class MenuManager : MonoBehaviour
 {
-    [Header("Menús")]
+    // Claves de PlayerPrefs para persistencia
+    private const string PREF_PERSONA_PREFIX = "PersonaDesbloqueada_";
+    private const string PREF_IGOR = "IgorDesbloqueado";
+    private const string PREF_EQUIPADO = "IndiceEquipado";
+    private const string PREF_TOKENS = "TokensGuardados";
+
+    [Header("MenÃºs")]
     public GameObject mainMenu;
     public GameObject velvet;
     public GameObject config;
     public GameObject gachaMenu;
     public GameObject menuVerPersonas;
 
-    [Header("Transición Velvet Room")]
+    [Header("MenÃº Principal - VisualizaciÃ³n Personaje")]
+    public Image imagenPersonajeMainMenu;           // Arrastra aquÃ­ la Image del menÃº principal
+
+    [Header("ConfiguraciÃ³n Escena de Juego")]
+    public string nombreEscenaJuego = "GameScene";
+
+    [Header("TransiciÃ³n Velvet Room")]
     public GameObject panelFundido1;
     public Animator animatorPanel1;
 
@@ -24,20 +37,20 @@ public class MenuManager : MonoBehaviour
     public GameObject panelFundido2;
     public Animator animatorPanel2;
 
-    [Header("Parámetros Booleanos (Animators)")]
+    [Header("ParÃ¡metros Booleanos (Animators)")]
     public string boolFundidoAzul1 = "fundidoAzul1";
     public string boolFundidoAzul2 = "fundidoAzul2";
 
-    [Header("Tiempos Transición Velvet")]
+    [Header("Tiempos TransiciÃ³n Velvet")]
     public float duracionFundido1 = 1.0f;
     public float duracionVideo = 4.0f;
     public float anticipacionPanel2 = 0.8f;
     public float duracionFundido2 = 1.2f;
 
     // ==========================================
-    // SECCIÓN: SISTEMA GACHA (GUILLOTINA)
+    // SECCIÃ“N: SISTEMA GACHA (GUILLOTINA)
     // ==========================================
-    [Header("Gacha - Vídeo Guillotina")]
+    [Header("Gacha - VÃ­deo Guillotina")]
     public GameObject objetoVideoGuillotina;
     public VideoPlayer videoPlayerGuillotina;
     public float duracionVideoGuillotina = 2.5f;
@@ -60,33 +73,33 @@ public class MenuManager : MonoBehaviour
     public bool igorDesbloqueado = false;
 
     // ==========================================
-    // SECCIÓN: MENÚ VER PERSONAS Y EQUIPAR
+    // SECCIÃ“N: MENÃš VER PERSONAS Y EQUIPAR
     // ==========================================
     [Header("Personaje por Defecto (Adachi)")]
-    public Sprite spriteAdachi;                     // Sprite original de Adachi
+    public Sprite spriteAdachi;
     public string nombreAdachi = "Adachi";
-    public Button botonResetAdachi;                 // Botón para resetear a Adachi
+    public Button botonResetAdachi;
 
-    [Header("Menú Ver Personas - UI General")]
-    public TextMeshProUGUI textoEquipado;          // Texto superior: "Equipped: [Nombre]"
+    [Header("MenÃº Ver Personas - UI General")]
+    public TextMeshProUGUI textoEquipado;
     public string prefijoEquipado = "Equipped: ";
     public Sprite spriteBloqueado;
     public Sprite spriteSecreto;
 
-    [Header("Menú Ver Personas - 10 Personas")]
+    [Header("MenÃº Ver Personas - 10 Personas")]
     public Image[] slotsPersonas = new Image[10];
     public TextMeshProUGUI[] textosNombresPersonas = new TextMeshProUGUI[10];
     public Button[] botonesPersonas = new Button[10];
 
-    [Header("Menú Ver Personas - Slot Secreto (Igor)")]
+    [Header("MenÃº Ver Personas - Slot Secreto (Igor)")]
     public Image slotIgor;
     public TextMeshProUGUI textoNombreIgor;
     public Button botonIgor;
 
-    // Variables estáticas: accesibles desde la escena del juego
+    // Variables estÃ¡ticas para pasar los datos entre escenas
     public static Sprite spriteSeleccionado;
     public static string nombreSeleccionado = "Adachi";
-    public static int indiceEquipado = -1; // -1 = Adachi (default), 0-9 = Personas, 99 = Igor
+    public static int indiceEquipado = -1; // -1 = Adachi, 0-9 = Personas, 99 = Igor
 
     private Coroutine transicionVelvetCoroutine;
     private Coroutine gachaCoroutine;
@@ -118,17 +131,69 @@ public class MenuManager : MonoBehaviour
             botonVolverAlGacha.onClick.AddListener(VolverAGacha);
         }
 
-        // Si no hay nada equipado todavía, arrancar con Adachi
-        if (spriteSeleccionado == null && spriteAdachi != null)
-        {
-            spriteSeleccionado = spriteAdachi;
-            nombreSeleccionado = nombreAdachi;
-            indiceEquipado = -1;
-        }
+        // 1. CARGAR DATOS GUARDADOS DESDE DISCO
+        CargarDatosGuardados();
 
         ConfigurarClicksDeBotones();
         ActualizarTextoEquipado();
         CambiarMenu(Menu.Main);
+    }
+
+    // ==========================================
+    // PERSISTENCIA Y CARGA DE DATOS
+    // ==========================================
+    private void CargarDatosGuardados()
+    {
+        // Cargar desbloqueos de las 10 Personas
+        for (int i = 0; i < personasDesbloqueadas.Length; i++)
+        {
+            personasDesbloqueadas[i] = (PlayerPrefs.GetInt(PREF_PERSONA_PREFIX + i, 0) == 1);
+        }
+
+        // Cargar desbloqueo de Igor
+        igorDesbloqueado = (PlayerPrefs.GetInt(PREF_IGOR, 0) == 1);
+        ComprobarDesbloqueoIgor();
+
+        // Cargar quÃ© personaje estaba equipado
+        indiceEquipado = PlayerPrefs.GetInt(PREF_EQUIPADO, -1);
+
+        if (indiceEquipado >= 0 && indiceEquipado < spritesPersonas.Length && personasDesbloqueadas[indiceEquipado])
+        {
+            spriteSeleccionado = spritesPersonas[indiceEquipado];
+            nombreSeleccionado = (nombresPersonas.Length > indiceEquipado && !string.IsNullOrEmpty(nombresPersonas[indiceEquipado]))
+                ? nombresPersonas[indiceEquipado]
+                : "Persona #" + (indiceEquipado + 1);
+        }
+        else if (indiceEquipado == 99 && igorDesbloqueado)
+        {
+            spriteSeleccionado = spriteIgor;
+            nombreSeleccionado = nombreIgor;
+        }
+        else
+        {
+            indiceEquipado = -1;
+            spriteSeleccionado = spriteAdachi;
+            nombreSeleccionado = nombreAdachi;
+        }
+    }
+
+    // FUNCIÃ“N PARA EL BOTÃ“N DE RESETEAR TODO EL JUEGO
+    [ContextMenu("Resetear Todo el Juego (PlayerPrefs)")]
+    public void ResetGame()
+    {
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save();
+
+        for (int i = 0; i < personasDesbloqueadas.Length; i++)
+        {
+            personasDesbloqueadas[i] = false;
+        }
+        igorDesbloqueado = false;
+
+        ResetAAdachi();
+        ActualizarVisualizacionPersonas();
+
+        Debug.Log("<color=yellow>Â¡Partida reseteada con Ã©xito! Monedas a 0 y personajes bloqueados.</color>");
     }
 
     private void ConfigurarClicksDeBotones()
@@ -168,8 +233,14 @@ public class MenuManager : MonoBehaviour
     }
 
     // ==========================================
-    // NAVEGACIÓN
+    // NAVEGACIÃ“N Y CAMBIO DE ESCENA
     // ==========================================
+    public void jugar()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(nombreEscenaJuego);
+    }
+
     public void IrAMain() => CambiarMenu(Menu.Main);
     public void IrAConfig() => CambiarMenu(Menu.Config);
     public void IrAGacha() => CambiarMenu(Menu.Gacha);
@@ -186,7 +257,7 @@ public class MenuManager : MonoBehaviour
     }
 
     // ==========================================
-    // LÓGICA DE LA TIRADA DE GACHA
+    // LÃ“GICA DE LA TIRADA DE GACHA
     // ==========================================
     public void tirar_gacha()
     {
@@ -199,7 +270,11 @@ public class MenuManager : MonoBehaviour
         if (panelResultado != null) panelResultado.SetActive(false);
 
         ultimaTirada = Random.Range(0, spritesPersonas.Length);
+
         personasDesbloqueadas[ultimaTirada] = true;
+        PlayerPrefs.SetInt(PREF_PERSONA_PREFIX + ultimaTirada, 1);
+        PlayerPrefs.Save();
+
         ComprobarDesbloqueoIgor();
 
         if (botonSaltarAnimacion != null) botonSaltarAnimacion.gameObject.SetActive(true);
@@ -257,7 +332,7 @@ public class MenuManager : MonoBehaviour
                 ? nombresPersonas[indice]
                 : "Persona #" + (indice + 1);
 
-            textoNombrePersona.text = "¡Has obtenido a:\n" + nombre + "!";
+            textoNombrePersona.text = "Â¡Has obtenido a:\n" + nombre + "!";
         }
 
         if (panelResultado != null)
@@ -295,12 +370,14 @@ public class MenuManager : MonoBehaviour
         if (todasConseguidas)
         {
             igorDesbloqueado = true;
-            Debug.Log("<color=cyan>¡Todas las Personas desbloqueadas! Igor está disponible.</color>");
+            PlayerPrefs.SetInt(PREF_IGOR, 1);
+            PlayerPrefs.Save();
+            Debug.Log("<color=cyan>Â¡Todas las Personas desbloqueadas! Igor estÃ¡ disponible.</color>");
         }
     }
 
     // ==========================================
-    // MENÚ VER PERSONAS, LISTA Y EQUIPAR
+    // MENÃš VER PERSONAS, LISTA Y EQUIPAR
     // ==========================================
     public void ver_personas()
     {
@@ -394,7 +471,7 @@ public class MenuManager : MonoBehaviour
             botonIgor.interactable = igorDesbloqueado && !igorEstaEquipado;
         }
 
-        // 3. Botón de Reset a Adachi
+        // 3. BotÃ³n de Reset a Adachi
         if (botonResetAdachi != null)
         {
             bool adachiEquipado = (indiceEquipado == -1);
@@ -412,13 +489,16 @@ public class MenuManager : MonoBehaviour
         if (indice >= 0 && indice < spritesPersonas.Length && personasDesbloqueadas[indice])
         {
             indiceEquipado = indice;
+            PlayerPrefs.SetInt(PREF_EQUIPADO, indiceEquipado);
+            PlayerPrefs.Save();
+
             spriteSeleccionado = spritesPersonas[indice];
             nombreSeleccionado = (nombresPersonas.Length > indice && !string.IsNullOrEmpty(nombresPersonas[indice]))
                 ? nombresPersonas[indice]
                 : "Persona #" + (indice + 1);
 
             ActualizarVisualizacionPersonas();
-            Debug.Log("Equipado: " + nombreSeleccionado);
+            Debug.Log("Equipado y guardado: " + nombreSeleccionado);
         }
     }
 
@@ -427,35 +507,47 @@ public class MenuManager : MonoBehaviour
         if (igorDesbloqueado)
         {
             indiceEquipado = 99;
+            PlayerPrefs.SetInt(PREF_EQUIPADO, 99);
+            PlayerPrefs.Save();
+
             spriteSeleccionado = spriteIgor;
             nombreSeleccionado = nombreIgor;
 
             ActualizarVisualizacionPersonas();
-            Debug.Log("Equipado: Igor");
+            Debug.Log("Equipado y guardado: Igor");
         }
     }
 
-    // FUNCIÓN PARA EL BOTÓN DE RESET A ADACHI
     public void ResetAAdachi()
     {
         indiceEquipado = -1;
+        PlayerPrefs.SetInt(PREF_EQUIPADO, -1);
+        PlayerPrefs.Save();
+
         spriteSeleccionado = spriteAdachi;
         nombreSeleccionado = nombreAdachi;
 
         ActualizarVisualizacionPersonas();
-        Debug.Log("Restablecido personaje por defecto: " + nombreAdachi);
+        Debug.Log("Restablecido y guardado por defecto: " + nombreAdachi);
     }
 
+    // Actualiza tanto el texto como la imagen del personaje en el menÃº principal
     private void ActualizarTextoEquipado()
     {
         if (textoEquipado != null)
         {
             textoEquipado.text = prefijoEquipado + nombreSeleccionado;
         }
+
+        // Muestra el sprite del personaje equipado en el menÃº principal
+        if (imagenPersonajeMainMenu != null && spriteSeleccionado != null)
+        {
+            imagenPersonajeMainMenu.sprite = spriteSeleccionado;
+        }
     }
 
     // ==========================================
-    // TRANSICIÓN VELVET ROOM
+    // TRANSICIÃ“N VELVET ROOM
     // ==========================================
     private IEnumerator TransicionVelvetRoutine()
     {

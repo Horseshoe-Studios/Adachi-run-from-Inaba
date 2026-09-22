@@ -1,19 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    //intentar cambiar el movimiento entre carriles para que no dependa de una resoluciÛn fija
+    private const string PREF_TOKENS = "TokensGuardados";
 
+    [Header("Visual del Personaje")]
     [SerializeField] private GameObject Adachi;
     [SerializeField] private GameObject Shield_Object;
     [SerializeField] private MeshRenderer Shield_Mesh_Renderer;
     [SerializeField] private Rigidbody rb;
 
-    //Controles movil
+    // Controles m√≥vil
     [SerializeField] private float minSwipeDistance = 50f;
     private Vector2 dragStartPosition;
 
@@ -22,9 +22,9 @@ public class PlayerMovement : MonoBehaviour
 
     public enum Carriles
     {
-       izquierdo = 1,
-       centro,
-       derecha,
+        izquierdo = 1,
+        centro,
+        derecha,
     }
 
     [SerializeField] private int vidas = 3;
@@ -32,14 +32,13 @@ public class PlayerMovement : MonoBehaviour
     private float Timer = 0;
     private float NewTimer = 0;
 
-
-    [SerializeField] private float separacionCarriles = 2.5f; // distancia en X entre carriles
+    [SerializeField] private float separacionCarriles = 2.5f;
     [SerializeField] private float velocidadCambioCarril = 15f;
 
     public Carriles PosicionActual = Carriles.centro;
     private int Carril = 2;
 
-    private bool Shield_Active = false; 
+    private bool Shield_Active = false;
     private bool Shield_Can_Active = true;
     [SerializeField] private float Shield_Cooldown = 6f;
     [SerializeField] private float Shield_Duration = 2f;
@@ -52,7 +51,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float GravityDown = 450f;
     private bool CanJump = true;
 
-    private float xCentro; // posicion X inicial del jugador, se usa como referencia
+    private float xCentro;
     private float xObjetivo;
 
     private float DamagedTimeWindow = 0.5f;
@@ -63,9 +62,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private TextMeshProUGUI TimerText;
     [SerializeField] private TextMeshProUGUI Timer_Death_Text;
     [SerializeField] private TextMeshProUGUI Shield_CD_Text;
-
     [SerializeField] private TextMeshProUGUI CoinsText;
-
 
     void Start()
     {
@@ -74,16 +71,35 @@ public class PlayerMovement : MonoBehaviour
 
         playerLayer = LayerMask.NameToLayer("Player");
         obstaculosLayer = LayerMask.NameToLayer("Obstaculo");
+
+        // 1. APLICAR EL SPRITE SELECCIONADO EN EL MEN√ö
+        AplicarSpriteSeleccionado();
+
+        // 2. CARGAR MONEDAS GUARDADAS
+        Coins = PlayerPrefs.GetInt(PREF_TOKENS, 0);
     }
+
+    private void AplicarSpriteSeleccionado()
+    {
+        if (Adachi != null && MenuManager.spriteSeleccionado != null)
+        {
+            SpriteRenderer sr = Adachi.GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                sr.sprite = MenuManager.spriteSeleccionado;
+            }
+        }
+    }
+
     void Update()
     {
         Inputs();
         Posicionamiento_Jugador();
         TextUpdater();
         Timer += 1 * Time.deltaTime;
-        NewTimer = Mathf.RoundToInt(Timer); 
-        
+        NewTimer = Mathf.RoundToInt(Timer);
     }
+
     private void FixedUpdate()
     {
         float Nueva_X_Lateral = Mathf.Lerp(rb.position.x, xObjetivo, velocidadCambioCarril * Time.fixedDeltaTime);
@@ -91,43 +107,41 @@ public class PlayerMovement : MonoBehaviour
         if (!CanJump)
         {
             float gravity = rb.velocity.y > 0 ? GravityUp : GravityDown;
-
             rb.velocity += Vector3.down * gravity * Time.fixedDeltaTime;
         }
 
-        rb.velocity = new Vector3 (rb.velocity.x, rb.velocity.y, MoveDirection.z * MoveVelocity);
+        rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, MoveDirection.z * MoveVelocity);
     }
+
     private void Inputs()
     {
-        //Movil
-
-        if (Input.GetMouseButtonDown(0)) //pulsa
+        // M√≥vil
+        if (Input.GetMouseButtonDown(0))
         {
             dragStartPosition = Input.mousePosition;
         }
 
-        if (Input.GetMouseButtonUp(0))//Suelta el pulsado
+        if (Input.GetMouseButtonUp(0))
         {
             Vector2 dragEndPosition = Input.mousePosition;
-
             Vector2 dragDirection = dragEndPosition - dragStartPosition;
 
             if (dragDirection.magnitude >= minSwipeDistance)
             {
                 if (Mathf.Abs(dragDirection.x) > Mathf.Abs(dragDirection.y))
                 {
-                    if (dragDirection.x > 0 && Carril < 3) //derecha
+                    if (dragDirection.x > 0 && Carril < 3)
                     {
                         Carril++;
                     }
-                    else if (dragDirection.x < 0 && Carril > 1) //izquierda
+                    else if (dragDirection.x < 0 && Carril > 1)
                     {
                         Carril--;
                     }
                 }
                 else
                 {
-                    if (dragDirection.y > 0) //para arriba
+                    if (dragDirection.y > 0)
                     {
                         Salto();
                     }
@@ -136,7 +150,6 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // PC
-        //para cambiar de carril A - D
         if (Input.GetKeyDown(KeyCode.A) && Carril > 1)
         {
             Carril--;
@@ -147,13 +160,14 @@ public class PlayerMovement : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.R) && !Shield_Active && Shield_Can_Active)
         {
-           ActivateShield();
+            ActivateShield();
         }
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Salto();
         }
     }
+
     public void ActivateShield()
     {
         if (Shield_Active || !Shield_Can_Active) return;
@@ -162,6 +176,7 @@ public class PlayerMovement : MonoBehaviour
         Shield_Can_Active = false;
         StartCoroutine(Shield());
     }
+
     private void Posicionamiento_Jugador()
     {
         float offsetX = 0f;
@@ -193,8 +208,8 @@ public class PlayerMovement : MonoBehaviour
         CanJump = false;
 
         rb.velocity = new Vector3(rb.velocity.x, JumpForce, rb.velocity.z);
-
     }
+
     private void TakeDamage()
     {
         if (Shield_Active) return;
@@ -215,23 +230,17 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(DamagedTimeWindow);
         Physics.IgnoreLayerCollision(playerLayer, obstaculosLayer, false);
     }
+
     private void Death()
     {
-        Time.timeScale = 0; 
+        Time.timeScale = 0;
         Death_UI.SetActive(true);
         Basic_UI.SetActive(true);
     }
+
     private void TextUpdater()
     {
-        string shield_String = "";
-        if (Shield_Can_Active)
-        {
-            shield_String = " Enabled";
-        }
-        else
-        {
-            shield_String = " Disabled";
-        }
+        string shield_String = Shield_Can_Active ? " Enabled" : " Disabled";
         CoinsText.text = "Coins: " + Coins + " $";
         LivesText.text = "Vidas: " + vidas;
 
@@ -245,6 +254,7 @@ public class PlayerMovement : MonoBehaviour
             TimerText.text = "Timer: " + NewTimer;
         }
     }
+
     private IEnumerator Shield()
     {
         Color Shield_Color = Shield_Mesh_Renderer.material.color;
@@ -265,26 +275,31 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.layer == 6) // capa de obst·culos
+        if (collision.gameObject.layer == 6) // capa de obst√°culos
         {
             TakeDamage();
         }
     }
-    private void OnCollisionStay(Collision collision) //est· en el suelo
+
+    private void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.layer == 8) CanJump = true;
     }
 
-    private void OnCollisionExit(Collision collision) //no est· en el suelo
+    private void OnCollisionExit(Collision collision)
     {
         if (collision.gameObject.layer == 8) CanJump = false;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == 9)
+        if (other.gameObject.layer == 9) // capa de monedas
         {
             Coins++;
+            // Guardar inmediatamente la moneda en el almac√©n de tokens
+            PlayerPrefs.SetInt(PREF_TOKENS, Coins);
+            PlayerPrefs.Save();
+
             other.gameObject.SetActive(false);
         }
     }
