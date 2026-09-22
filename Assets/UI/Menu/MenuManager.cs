@@ -332,7 +332,7 @@ public class MenuManager : MonoBehaviour
                 ? nombresPersonas[indice]
                 : "Persona #" + (indice + 1);
 
-            textoNombrePersona.text = "¡Has obtenido a:\n" + nombre + "!";
+            textoNombrePersona.text = "You just got a:\n" + nombre + "!";
         }
 
         if (panelResultado != null)

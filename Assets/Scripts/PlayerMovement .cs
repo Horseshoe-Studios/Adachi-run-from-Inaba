@@ -240,9 +240,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void TextUpdater()
     {
-        string shield_String = Shield_Can_Active ? " Enabled" : " Disabled";
+        string shield_String = Shield_Can_Active ? " Available" : " In cooldown!";
         CoinsText.text = "Coins: " + Coins + " $";
-        LivesText.text = "Vidas: " + vidas;
+        LivesText.text = "Lives: " + vidas;
 
         Shield_CD_Text.text = "Shield: " + shield_String;
         if (vidas <= 0)
