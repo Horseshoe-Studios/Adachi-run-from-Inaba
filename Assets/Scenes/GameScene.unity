@@ -573,7 +573,7 @@ MonoBehaviour:
   PosicionActual: 2
   Shield_Cooldown: 3
   Shield_Duration: 1
-  MoveVelocity: 200
+  MoveVelocity: 400
   JumpForce: 150
   GravityUp: 250
   GravityDown: 450
@@ -3359,6 +3359,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerScript: {fileID: 247864549}
+  nombreEscenaMenu: Menu
 --- !u!1 &1962654686
 GameObject:
   m_ObjectHideFlags: 0
