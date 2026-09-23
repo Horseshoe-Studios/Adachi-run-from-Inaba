@@ -33,7 +33,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Ajustes de Carriles")]
     [SerializeField] private float separacionCarriles = 2.5f;
-    [SerializeField] private float velocidadCambioCarril = 20f; // Aumentada para que el cambio sea ágil e inmediato
+    [SerializeField] private float velocidadCambioCarril = 20f;
 
     public Carriles PosicionActual = Carriles.centro;
     private int Carril = 2;
@@ -131,10 +131,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // 1. Movimiento lateral lineal a velocidad constante (sin ralentizarse al final)
+        // 1. Movimiento lateral lineal a velocidad constante
         float Nueva_X_Lateral = Mathf.MoveTowards(rb.position.x, xObjetivo, velocidadCambioCarril * Time.fixedDeltaTime);
 
-        // Snap: Si está a menos de 5cm del centro del carril, se clava exactamente en el objetivo
+        // Snap al centro de carril
         if (Mathf.Abs(Nueva_X_Lateral - xObjetivo) < 0.05f)
         {
             Nueva_X_Lateral = xObjetivo;
@@ -175,7 +175,7 @@ public class PlayerMovement : MonoBehaviour
             rb.position = new Vector3(Nueva_X_Lateral, rb.position.y, rb.position.z);
         }
 
-        // 3. Fijar rb.velocity.x estrictamente en 0f para evitar que la física pelee con el carril
+        // 3. Fijar rb.velocity.x estrictamente en 0f
         rb.velocity = new Vector3(0f, rb.velocity.y, MoveDirection.z * MoveVelocity);
     }
 
@@ -342,13 +342,22 @@ public class PlayerMovement : MonoBehaviour
     private void Death()
     {
         Time.timeScale = 0;
-        Death_UI.SetActive(true);
-        Basic_UI.SetActive(true);
 
-        if (AudioManager.Instance != null)
+        if (LeaderboardManager.Instance != null)
         {
-            AudioManager.Instance.StopMusic();
-            AudioManager.Instance.PlayPerder();
+            LeaderboardManager.Instance.ComprobarPuntuacion((int)NewTimer);
+        }
+        else
+        {
+            // Respaldo habitual si LeaderboardManager no está en la escena
+            Death_UI.SetActive(true);
+            Basic_UI.SetActive(true);
+
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.StopMusic();
+                AudioManager.Instance.PlayPerder();
+            }
         }
     }
 

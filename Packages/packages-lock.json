@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.lootlocker.lootlockersdk": {
+      "version": "https://github.com/LootLocker/unity-sdk.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "43bef4724f92b9e592d2356416f0c9d8741e5265"
+    },
     "com.unity.burst": {
       "version": "1.8.21",
       "depth": 1,
