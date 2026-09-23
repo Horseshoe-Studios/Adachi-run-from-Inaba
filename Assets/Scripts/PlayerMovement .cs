@@ -13,7 +13,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private MeshRenderer Shield_Mesh_Renderer;
     [SerializeField] private Rigidbody rb;
 
-    // Controles móvil
     [SerializeField] private float minSwipeDistance = 50f;
     private Vector2 dragStartPosition;
 
@@ -32,8 +31,9 @@ public class PlayerMovement : MonoBehaviour
     private float Timer = 0;
     private float NewTimer = 0;
 
+    [Header("Ajustes de Carriles")]
     [SerializeField] private float separacionCarriles = 2.5f;
-    [SerializeField] private float velocidadCambioCarril = 15f;
+    [SerializeField] private float velocidadCambioCarril = 20f; // Aumentada para que el cambio sea ágil e inmediato
 
     public Carriles PosicionActual = Carriles.centro;
     private int Carril = 2;
@@ -46,10 +46,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float MoveVelocity = 20f;
     Vector3 MoveDirection = Vector3.forward;
 
+    [Header("Salto y Caída Rápida")]
     [SerializeField] private float JumpForce = 100f;
+    [SerializeField] private float FastDropForce = 300f;
     [SerializeField] private float GravityUp = 250f;
     [SerializeField] private float GravityDown = 450f;
     private bool CanJump = true;
+
+    private BoxCollider boxCollider;
+    private float distanciaPivotAPies = 0f;
 
     private float xCentro;
     private float xObjetivo;
@@ -72,11 +77,35 @@ public class PlayerMovement : MonoBehaviour
         playerLayer = LayerMask.NameToLayer("Player");
         obstaculosLayer = LayerMask.NameToLayer("Obstaculo");
 
-        // 1. APLICAR EL SPRITE SELECCIONADO EN EL MENÚ
-        AplicarSpriteSeleccionado();
+        boxCollider = GetComponent<BoxCollider>();
+        if (boxCollider != null)
+        {
+            distanciaPivotAPies = (boxCollider.size.y * 0.5f - boxCollider.center.y) * transform.lossyScale.y;
 
-        // 2. CARGAR MONEDAS GUARDADAS
+            if (boxCollider.sharedMaterial == null)
+            {
+                PhysicMaterial mat = new PhysicMaterial("SinFriccionAuto");
+                mat.dynamicFriction = 0f;
+                mat.staticFriction = 0f;
+                mat.frictionCombine = PhysicMaterialCombine.Minimum;
+                mat.bounceCombine = PhysicMaterialCombine.Minimum;
+                boxCollider.material = mat;
+            }
+        }
+
+        if (rb != null)
+        {
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+            rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+        }
+
+        AplicarSpriteSeleccionado();
         Coins = PlayerPrefs.GetInt(PREF_TOKENS, 0);
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayMusicaJuego();
+        }
     }
 
     private void AplicarSpriteSeleccionado()
@@ -102,15 +131,52 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        float Nueva_X_Lateral = Mathf.Lerp(rb.position.x, xObjetivo, velocidadCambioCarril * Time.fixedDeltaTime);
-        rb.position = new Vector3(Nueva_X_Lateral, rb.position.y, rb.position.z);
-        if (!CanJump)
+        // 1. Movimiento lateral lineal a velocidad constante (sin ralentizarse al final)
+        float Nueva_X_Lateral = Mathf.MoveTowards(rb.position.x, xObjetivo, velocidadCambioCarril * Time.fixedDeltaTime);
+
+        // Snap: Si está a menos de 5cm del centro del carril, se clava exactamente en el objetivo
+        if (Mathf.Abs(Nueva_X_Lateral - xObjetivo) < 0.05f)
         {
-            float gravity = rb.velocity.y > 0 ? GravityUp : GravityDown;
-            rb.velocity += Vector3.down * gravity * Time.fixedDeltaTime;
+            Nueva_X_Lateral = xObjetivo;
         }
 
-        rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, MoveDirection.z * MoveVelocity);
+        // 2. Control vertical (Salto / Fast Drop)
+        if (!CanJump)
+        {
+            if (rb.velocity.y < 0f)
+            {
+                float caidaEsteFrame = Mathf.Abs(rb.velocity.y) * Time.fixedDeltaTime;
+                float alturaRayo = caidaEsteFrame + distanciaPivotAPies + 1.0f;
+
+                RaycastHit hit;
+                if (Physics.Raycast(rb.position + Vector3.up * 0.5f, Vector3.down, out hit, alturaRayo, 1 << 8))
+                {
+                    float yPiesActual = rb.position.y - distanciaPivotAPies;
+                    float distanciaAlSuelo = yPiesActual - hit.point.y;
+
+                    if (distanciaAlSuelo <= caidaEsteFrame)
+                    {
+                        rb.position = new Vector3(Nueva_X_Lateral, hit.point.y + distanciaPivotAPies, rb.position.z);
+                        rb.velocity = new Vector3(0f, 0f, MoveDirection.z * MoveVelocity);
+                        CanJump = true;
+                    }
+                }
+            }
+
+            if (!CanJump)
+            {
+                float gravity = rb.velocity.y > 0 ? GravityUp : GravityDown;
+                rb.velocity += Vector3.down * gravity * Time.fixedDeltaTime;
+                rb.position = new Vector3(Nueva_X_Lateral, rb.position.y, rb.position.z);
+            }
+        }
+        else
+        {
+            rb.position = new Vector3(Nueva_X_Lateral, rb.position.y, rb.position.z);
+        }
+
+        // 3. Fijar rb.velocity.x estrictamente en 0f para evitar que la física pelee con el carril
+        rb.velocity = new Vector3(0f, rb.velocity.y, MoveDirection.z * MoveVelocity);
     }
 
     private void Inputs()
@@ -133,10 +199,12 @@ public class PlayerMovement : MonoBehaviour
                     if (dragDirection.x > 0 && Carril < 3)
                     {
                         Carril++;
+                        if (AudioManager.Instance != null) AudioManager.Instance.PlayPersonajeMover();
                     }
                     else if (dragDirection.x < 0 && Carril > 1)
                     {
                         Carril--;
+                        if (AudioManager.Instance != null) AudioManager.Instance.PlayPersonajeMover();
                     }
                 }
                 else
@@ -144,6 +212,10 @@ public class PlayerMovement : MonoBehaviour
                     if (dragDirection.y > 0)
                     {
                         Salto();
+                    }
+                    else if (dragDirection.y < 0)
+                    {
+                        BajarSalto();
                     }
                 }
             }
@@ -153,25 +225,36 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.A) && Carril > 1)
         {
             Carril--;
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayPersonajeMover();
         }
         if (Input.GetKeyDown(KeyCode.D) && Carril < 3)
         {
             Carril++;
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayPersonajeMover();
         }
         if (Input.GetKeyDown(KeyCode.R) && !Shield_Active && Shield_Can_Active)
         {
             ActivateShield();
         }
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
         {
             Salto();
+        }
+        if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            BajarSalto();
         }
     }
 
     public void ActivateShield()
     {
         if (Shield_Active || !Shield_Can_Active) return;
-        Debug.Log("escudo activado");
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayEscudoActivar();
+        }
+
         Shield_Active = true;
         Shield_Can_Active = false;
         StartCoroutine(Shield());
@@ -207,7 +290,24 @@ public class PlayerMovement : MonoBehaviour
         if (!CanJump) return;
         CanJump = false;
 
-        rb.velocity = new Vector3(rb.velocity.x, JumpForce, rb.velocity.z);
+        rb.velocity = new Vector3(0f, JumpForce, rb.velocity.z);
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayPersonajeMover();
+        }
+    }
+
+    private void BajarSalto()
+    {
+        if (CanJump) return;
+
+        rb.velocity = new Vector3(0f, -FastDropForce, rb.velocity.z);
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayPersonajeMover();
+        }
     }
 
     private void TakeDamage()
@@ -219,6 +319,14 @@ public class PlayerMovement : MonoBehaviour
         {
             Death();
         }
+        else
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayRecibirDano();
+            }
+        }
+
         StartCoroutine(Damaged());
     }
 
@@ -236,13 +344,19 @@ public class PlayerMovement : MonoBehaviour
         Time.timeScale = 0;
         Death_UI.SetActive(true);
         Basic_UI.SetActive(true);
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopMusic();
+            AudioManager.Instance.PlayPerder();
+        }
     }
 
     private void TextUpdater()
     {
         string shield_String = Shield_Can_Active ? " Available" : " In cooldown!";
         CoinsText.text = "Coins: " + Coins + " $";
-        LivesText.text = "Lives: " + vidas;
+        LivesText.text = "Vidas: " + vidas;
 
         Shield_CD_Text.text = "Shield: " + shield_String;
         if (vidas <= 0)
@@ -275,30 +389,48 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.layer == 6) // capa de obstáculos
+        if (collision.gameObject.layer == 6)
         {
             TakeDamage();
+        }
+        else if (collision.gameObject.layer == 8)
+        {
+            CanJump = true;
+            if (rb.velocity.y < 0f)
+            {
+                rb.velocity = new Vector3(0f, 0f, rb.velocity.z);
+            }
         }
     }
 
     private void OnCollisionStay(Collision collision)
     {
-        if (collision.gameObject.layer == 8) CanJump = true;
+        if (collision.gameObject.layer == 8)
+        {
+            CanJump = true;
+        }
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.layer == 8) CanJump = false;
+        if (collision.gameObject.layer == 8)
+        {
+            CanJump = false;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == 9) // capa de monedas
+        if (other.gameObject.layer == 9)
         {
             Coins++;
-            // Guardar inmediatamente la moneda en el almacén de tokens
             PlayerPrefs.SetInt(PREF_TOKENS, Coins);
             PlayerPrefs.Save();
+
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayMonedaRecoger();
+            }
 
             other.gameObject.SetActive(false);
         }

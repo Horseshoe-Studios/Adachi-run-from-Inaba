@@ -8,7 +8,6 @@ using TMPro;
 
 public class MenuManager : MonoBehaviour
 {
-    // Claves de PlayerPrefs para persistencia
     private const string PREF_PERSONA_PREFIX = "PersonaDesbloqueada_";
     private const string PREF_IGOR = "IgorDesbloqueado";
     private const string PREF_EQUIPADO = "IndiceEquipado";
@@ -21,8 +20,13 @@ public class MenuManager : MonoBehaviour
     public GameObject gachaMenu;
     public GameObject menuVerPersonas;
 
+    [Header("Ajustes - Sliders de Volumen")]
+    public Slider sliderMaster;
+    public Slider sliderMusica;
+    public Slider sliderSFX;
+
     [Header("Menú Principal - Visualización Personaje")]
-    public Image imagenPersonajeMainMenu;           // Arrastra aquí la Image del menú principal
+    public Image imagenPersonajeMainMenu;
 
     [Header("Configuración Escena de Juego")]
     public string nombreEscenaJuego = "GameScene";
@@ -96,10 +100,9 @@ public class MenuManager : MonoBehaviour
     public TextMeshProUGUI textoNombreIgor;
     public Button botonIgor;
 
-    // Variables estáticas para pasar los datos entre escenas
     public static Sprite spriteSeleccionado;
     public static string nombreSeleccionado = "Adachi";
-    public static int indiceEquipado = -1; // -1 = Adachi, 0-9 = Personas, 99 = Igor
+    public static int indiceEquipado = -1;
 
     private Coroutine transicionVelvetCoroutine;
     private Coroutine gachaCoroutine;
@@ -131,30 +134,67 @@ public class MenuManager : MonoBehaviour
             botonVolverAlGacha.onClick.AddListener(VolverAGacha);
         }
 
-        // 1. CARGAR DATOS GUARDADOS DESDE DISCO
         CargarDatosGuardados();
-
         ConfigurarClicksDeBotones();
         ActualizarTextoEquipado();
+
+        // Inicializar sliders con el valor que tengan guardado
+        SincronizarSlidersVolumen();
+
         CambiarMenu(Menu.Main);
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayMusicaMenu();
+        }
     }
 
     // ==========================================
-    // PERSISTENCIA Y CARGA DE DATOS
+    // SINCRONIZACIÓN DE SLIDERS DE AJUSTES
     // ==========================================
+    private void SincronizarSlidersVolumen()
+    {
+        if (sliderMaster != null)
+        {
+            float val = PlayerPrefs.GetFloat("VolumenMaster", 1f);
+            sliderMaster.SetValueWithoutNotify(val);
+            sliderMaster.onValueChanged.RemoveAllListeners();
+            sliderMaster.onValueChanged.AddListener((v) => {
+                if (AudioManager.Instance != null) AudioManager.Instance.SetMasterVolume(v);
+            });
+        }
+
+        if (sliderMusica != null)
+        {
+            float val = PlayerPrefs.GetFloat("VolumenMusic", 1f);
+            sliderMusica.SetValueWithoutNotify(val);
+            sliderMusica.onValueChanged.RemoveAllListeners();
+            sliderMusica.onValueChanged.AddListener((v) => {
+                if (AudioManager.Instance != null) AudioManager.Instance.SetMusicVolume(v);
+            });
+        }
+
+        if (sliderSFX != null)
+        {
+            float val = PlayerPrefs.GetFloat("VolumenSFX", 1f);
+            sliderSFX.SetValueWithoutNotify(val);
+            sliderSFX.onValueChanged.RemoveAllListeners();
+            sliderSFX.onValueChanged.AddListener((v) => {
+                if (AudioManager.Instance != null) AudioManager.Instance.SetSFXVolume(v);
+            });
+        }
+    }
+
     private void CargarDatosGuardados()
     {
-        // Cargar desbloqueos de las 10 Personas
         for (int i = 0; i < personasDesbloqueadas.Length; i++)
         {
             personasDesbloqueadas[i] = (PlayerPrefs.GetInt(PREF_PERSONA_PREFIX + i, 0) == 1);
         }
 
-        // Cargar desbloqueo de Igor
         igorDesbloqueado = (PlayerPrefs.GetInt(PREF_IGOR, 0) == 1);
         ComprobarDesbloqueoIgor();
 
-        // Cargar qué personaje estaba equipado
         indiceEquipado = PlayerPrefs.GetInt(PREF_EQUIPADO, -1);
 
         if (indiceEquipado >= 0 && indiceEquipado < spritesPersonas.Length && personasDesbloqueadas[indiceEquipado])
@@ -177,12 +217,28 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    // FUNCIÓN PARA EL BOTÓN DE RESETEAR TODO EL JUEGO
     [ContextMenu("Resetear Todo el Juego (PlayerPrefs)")]
     public void ResetGame()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayResetearJuego();
+        }
+
         PlayerPrefs.DeleteAll();
         PlayerPrefs.Save();
+
+        // Devolver las barras de volumen al 100% y aplicarlo
+        if (sliderMaster != null) sliderMaster.SetValueWithoutNotify(1f);
+        if (sliderMusica != null) sliderMusica.SetValueWithoutNotify(1f);
+        if (sliderSFX != null) sliderSFX.SetValueWithoutNotify(1f);
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SetMasterVolume(1f);
+            AudioManager.Instance.SetMusicVolume(1f);
+            AudioManager.Instance.SetSFXVolume(1f);
+        }
 
         for (int i = 0; i < personasDesbloqueadas.Length; i++)
         {
@@ -192,8 +248,6 @@ public class MenuManager : MonoBehaviour
 
         ResetAAdachi();
         ActualizarVisualizacionPersonas();
-
-        Debug.Log("<color=yellow>¡Partida reseteada con éxito! Monedas a 0 y personajes bloqueados.</color>");
     }
 
     private void ConfigurarClicksDeBotones()
@@ -237,18 +291,57 @@ public class MenuManager : MonoBehaviour
     // ==========================================
     public void jugar()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayBotonPlay();
         Time.timeScale = 1f;
         SceneManager.LoadScene(nombreEscenaJuego);
     }
 
-    public void IrAMain() => CambiarMenu(Menu.Main);
-    public void IrAConfig() => CambiarMenu(Menu.Config);
-    public void IrAGacha() => CambiarMenu(Menu.Gacha);
-    public void SalirDeGachaAVelvet() => CambiarMenu(Menu.Velvet);
-    public void SalirDeGachaAMain() => CambiarMenu(Menu.Main);
+    public void IrAMain()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayBotonMenu();
+            AudioManager.Instance.PlayMusicaMenu();
+        }
+        CambiarMenu(Menu.Main);
+    }
+
+    public void IrAConfig()
+    {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayBotonMenu();
+
+        // Asegura que las barras reflejen la posición actual al abrir Ajustes
+        SincronizarSlidersVolumen();
+
+        CambiarMenu(Menu.Config);
+    }
+
+    public void IrAGacha()
+    {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayBotonMenu();
+        CambiarMenu(Menu.Gacha);
+    }
+
+    public void SalirDeGachaAVelvet()
+    {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayBotonMenu();
+        CambiarMenu(Menu.Velvet);
+    }
+
+    public void SalirDeGachaAMain()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayBotonMenu();
+            AudioManager.Instance.PlayMusicaMenu();
+        }
+        CambiarMenu(Menu.Main);
+    }
 
     public void IrAVelvet()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayBotonMenu();
+
         if (transicionVelvetCoroutine != null)
         {
             StopCoroutine(transicionVelvetCoroutine);
@@ -262,6 +355,12 @@ public class MenuManager : MonoBehaviour
     public void tirar_gacha()
     {
         if (gachaCoroutine != null) return;
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayTirarGacha();
+        }
+
         gachaCoroutine = StartCoroutine(TirarGachaRoutine());
     }
 
@@ -283,8 +382,9 @@ public class MenuManager : MonoBehaviour
         {
             objetoVideoGuillotina.SetActive(true);
             videoPlayerGuillotina.enabled = true;
-            videoPlayerGuillotina.Prepare();
+            yield return null;
 
+            videoPlayerGuillotina.Prepare();
             while (!videoPlayerGuillotina.isPrepared)
             {
                 yield return null;
@@ -305,6 +405,8 @@ public class MenuManager : MonoBehaviour
 
     public void SkipearAnimacion()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayBotonMenu();
+
         if (gachaCoroutine != null)
         {
             StopCoroutine(gachaCoroutine);
@@ -321,6 +423,11 @@ public class MenuManager : MonoBehaviour
 
     private void MostrarResultado(int indice)
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayResultadoGacha();
+        }
+
         if (imagenResultado != null && spritesPersonas[indice] != null)
         {
             imagenResultado.sprite = spritesPersonas[indice];
@@ -332,7 +439,7 @@ public class MenuManager : MonoBehaviour
                 ? nombresPersonas[indice]
                 : "Persona #" + (indice + 1);
 
-            textoNombrePersona.text = "You just got a:\n" + nombre + "!";
+            textoNombrePersona.text = "¡Has obtenido a:\n" + nombre + "!";
         }
 
         if (panelResultado != null)
@@ -343,6 +450,8 @@ public class MenuManager : MonoBehaviour
 
     public void VolverAGacha()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayBotonMenu();
+
         if (panelResultado != null)
         {
             panelResultado.SetActive(false);
@@ -372,7 +481,6 @@ public class MenuManager : MonoBehaviour
             igorDesbloqueado = true;
             PlayerPrefs.SetInt(PREF_IGOR, 1);
             PlayerPrefs.Save();
-            Debug.Log("<color=cyan>¡Todas las Personas desbloqueadas! Igor está disponible.</color>");
         }
     }
 
@@ -381,12 +489,14 @@ public class MenuManager : MonoBehaviour
     // ==========================================
     public void ver_personas()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayBotonMenu();
         CambiarMenu(Menu.VerPersonas);
         ActualizarVisualizacionPersonas();
     }
 
     public void SalirDeVerPersonas()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayBotonMenu();
         CambiarMenu(Menu.Gacha);
     }
 
@@ -394,12 +504,11 @@ public class MenuManager : MonoBehaviour
     {
         ActualizarTextoEquipado();
 
-        // 1. Actualizar las 10 Personas
         for (int i = 0; i < slotsPersonas.Length; i++)
         {
             bool estaDesbloqueada = (i < personasDesbloqueadas.Length && personasDesbloqueadas[i]);
             bool estaEquipada = (indiceEquipado == i);
-            string nombreReal = (i < nombresPersonas.Length && !string.IsNullOrEmpty(nombresPersonas[i]))
+            string nombreReal = (i < nombresPersonas.Length && !string.IsNullOrEmpty(nombresPersonas[indiceEquipado >= 0 ? i : 0]))
                 ? nombresPersonas[i]
                 : "Persona " + (i + 1);
 
@@ -418,25 +527,15 @@ public class MenuManager : MonoBehaviour
                 TextMeshProUGUI textoBoton = botonesPersonas[i].GetComponentInChildren<TextMeshProUGUI>();
                 if (textoBoton != null)
                 {
-                    if (!estaDesbloqueada)
-                    {
-                        textoBoton.text = "Locked";
-                    }
-                    else if (estaEquipada)
-                    {
-                        textoBoton.text = "Equipped";
-                    }
-                    else
-                    {
-                        textoBoton.text = "Equip";
-                    }
+                    if (!estaDesbloqueada) textoBoton.text = "Locked";
+                    else if (estaEquipada) textoBoton.text = "Equipped";
+                    else textoBoton.text = "Equip";
                 }
 
                 botonesPersonas[i].interactable = estaDesbloqueada && !estaEquipada;
             }
         }
 
-        // 2. Slot de Igor
         bool igorEstaEquipado = (indiceEquipado == 99);
 
         if (slotIgor != null)
@@ -454,24 +553,14 @@ public class MenuManager : MonoBehaviour
             TextMeshProUGUI textoBotonIgor = botonIgor.GetComponentInChildren<TextMeshProUGUI>();
             if (textoBotonIgor != null)
             {
-                if (!igorDesbloqueado)
-                {
-                    textoBotonIgor.text = "Locked";
-                }
-                else if (igorEstaEquipado)
-                {
-                    textoBotonIgor.text = "Equipped";
-                }
-                else
-                {
-                    textoBotonIgor.text = "Equip";
-                }
+                if (!igorDesbloqueado) textoBotonIgor.text = "Locked";
+                else if (igorEstaEquipado) textoBotonIgor.text = "Equipped";
+                else textoBotonIgor.text = "Equip";
             }
 
             botonIgor.interactable = igorDesbloqueado && !igorEstaEquipado;
         }
 
-        // 3. Botón de Reset a Adachi
         if (botonResetAdachi != null)
         {
             bool adachiEquipado = (indiceEquipado == -1);
@@ -488,6 +577,11 @@ public class MenuManager : MonoBehaviour
     {
         if (indice >= 0 && indice < spritesPersonas.Length && personasDesbloqueadas[indice])
         {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayEquiparPersona();
+            }
+
             indiceEquipado = indice;
             PlayerPrefs.SetInt(PREF_EQUIPADO, indiceEquipado);
             PlayerPrefs.Save();
@@ -498,7 +592,6 @@ public class MenuManager : MonoBehaviour
                 : "Persona #" + (indice + 1);
 
             ActualizarVisualizacionPersonas();
-            Debug.Log("Equipado y guardado: " + nombreSeleccionado);
         }
     }
 
@@ -506,6 +599,11 @@ public class MenuManager : MonoBehaviour
     {
         if (igorDesbloqueado)
         {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayEquiparPersona();
+            }
+
             indiceEquipado = 99;
             PlayerPrefs.SetInt(PREF_EQUIPADO, 99);
             PlayerPrefs.Save();
@@ -514,12 +612,16 @@ public class MenuManager : MonoBehaviour
             nombreSeleccionado = nombreIgor;
 
             ActualizarVisualizacionPersonas();
-            Debug.Log("Equipado y guardado: Igor");
         }
     }
 
     public void ResetAAdachi()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayEquiparPersona();
+        }
+
         indiceEquipado = -1;
         PlayerPrefs.SetInt(PREF_EQUIPADO, -1);
         PlayerPrefs.Save();
@@ -528,10 +630,8 @@ public class MenuManager : MonoBehaviour
         nombreSeleccionado = nombreAdachi;
 
         ActualizarVisualizacionPersonas();
-        Debug.Log("Restablecido y guardado por defecto: " + nombreAdachi);
     }
 
-    // Actualiza tanto el texto como la imagen del personaje en el menú principal
     private void ActualizarTextoEquipado()
     {
         if (textoEquipado != null)
@@ -539,7 +639,6 @@ public class MenuManager : MonoBehaviour
             textoEquipado.text = prefijoEquipado + nombreSeleccionado;
         }
 
-        // Muestra el sprite del personaje equipado en el menú principal
         if (imagenPersonajeMainMenu != null && spriteSeleccionado != null)
         {
             imagenPersonajeMainMenu.sprite = spriteSeleccionado;
@@ -586,6 +685,11 @@ public class MenuManager : MonoBehaviour
 
         if (videoPlayer != null) videoPlayer.Stop();
         if (objetoVideo != null) objetoVideo.SetActive(false);
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayMusicaVelvet();
+        }
 
         CambiarMenu(Menu.Velvet);
 
